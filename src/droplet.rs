@@ -1,18 +1,27 @@
+use std::ops::Neg;
+
 use bevy::prelude::*;
 
 use crate::marching_squares::{marching_squares, matrix::Matrix, point::Point, tiles::Tiles};
 
 #[derive(Component)]
-struct Droplet {
-    pos: Vec<(Vec2, f32)>,
+pub struct Droplet {
+    pub posns: Vec<(Vec2, f32)>,
+    pub max_posns_len: usize,
 }
 
 /// Calculates droplet geometry using a grid-based marching squares approach.
 /// posns - a slice of posn/size tuples
 /// res - the resolution of the grid
 /// scale - distance between points on the grid
-fn calculate_droplet_geometry(posns: &[(Vec2, f32)], res : [usize; 2], scale: f64) -> Vec<Point<f64, 2>> {
-    let mut elems: Vec<i8> = vec![0; res[0] * res[1]];
+pub fn calculate_droplet_geometry(
+    posns: &[(Vec2, f32)],
+    res: [usize; 2],
+    scale: f64,
+    radius: f32,
+    decay: f32,
+) -> Vec<Point<f32, 2>> {
+    let mut elems = vec![0.0; res[0] * res[1]];
     for y in 0..res[1] {
         for x in 0..res[0] {
             let idx = y * res[0] + x;
@@ -20,18 +29,21 @@ fn calculate_droplet_geometry(posns: &[(Vec2, f32)], res : [usize; 2], scale: f6
                 x as f32 - res[0] as f32 / 2.0,
                 y as f32 - res[1] as f32 / 2.0,
             ) * scale as f32;
-            for (pos, v) in posns {
+            let mut r = radius;
+            let mut sum = 0.0;
+            let mut x: f32 = 0.0;
+            for (pos, f) in posns {
                 let diff = elempos - (*pos - posns[0].0);
-                elems[idx] = elems[idx]
-                    .saturating_add((v / diff.length_squared() - 0.5 * i8::MAX as f32) as i8);
+                let rv = r * f;
+                sum += (1.0 - rv * rv / diff.length_squared()).max(-10000.0);
+                r *= decay;
             }
+            elems[idx] = sum / posns.len() as f32;
         }
     }
     let mat = Matrix::new(res, &elems);
-    let tiles: Tiles<i8> = Tiles::new(mat, scale);
+    let tiles: Tiles<f32> = Tiles::new(mat, scale);
     let (verts, _) = marching_squares(&tiles);
     verts
+    
 }
-
-
-

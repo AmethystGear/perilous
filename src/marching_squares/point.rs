@@ -41,7 +41,7 @@ impl<const N: usize> Point<f64, N> {
     pub fn lerp(self, other: Point<f64, N>, amount: f64) -> Point<f64, N> {
         let mut combined = [0.0; N];
         for i in 0..N {
-            combined[i] = self.v[i] * amount + other.v[i] * (1.0 - amount);
+            combined[i] = self.v[i] * (1.0 - amount) + other.v[i] * amount;
         }
         return Point::new(combined);
     }
