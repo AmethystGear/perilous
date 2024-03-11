@@ -2900,6 +2900,7 @@ dependencies = [
  "bevy",
  "bevy_prototype_lyon",
  "bevy_rapier2d",
+ "itertools",
  "lazy_static",
  "num-traits",
  "rand",

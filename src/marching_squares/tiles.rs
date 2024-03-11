@@ -1,4 +1,6 @@
-use super::{matrix::Matrix, point::{Numeric, Point}};
+use crate::point::{Numeric, Point};
+
+use super::matrix::Matrix;
 
 /// tilemap which returns a default density for
 /// indices outside it's range.

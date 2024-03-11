@@ -4,10 +4,11 @@ use std::fmt::Debug;
 use lazy_static::lazy_static;
 use num_traits::{One, Signed, Zero};
 
-use self::{point::{Numeric, Point}, tiles::Tiles};
+use crate::point::{Numeric, Point};
+
+use self::tiles::Tiles;
 
 pub mod matrix;
-pub mod point;
 pub mod tiles;
 
 
